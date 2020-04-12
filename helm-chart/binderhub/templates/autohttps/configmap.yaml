@@ -6,7 +6,10 @@ apiVersion: v1
 metadata:
   name: traefik-proxy-config
   labels:
-    {{- include "jupyterhub.labels" . | nindent 4 }}
+    app: binder
+    component: autohttps
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 data:
   # This configmap provides the complete configuration for our traefik proxy.
   # traefik has 'static' config and 'dynamic' config (https://docs.traefik.io/getting-started/configuration-overview/)
@@ -130,5 +133,5 @@ data:
     [http.services]
       [http.services.binderhub.loadBalancer]
         [[http.services.binderhub.loadBalancer.servers]]
-          url = "http://binder:80/"
+          url = "http://binder:8000/"
 {{- end }}

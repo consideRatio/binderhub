@@ -1,21 +1,29 @@
-{{- $HTTPS := (and .Values.proxy.https.hosts .Values.proxy.https.enabled) }}
-{{- $autoHTTPS := (and $HTTPS (eq .Values.proxy.https.type "letsencrypt")) }}
+{{- $HTTPS := (and .Values.jupyterhub.proxy.https.hosts .Values.jupyterhub.proxy.https.enabled) }}
+{{- $autoHTTPS := (and $HTTPS (eq .Values.jupyterhub.proxy.https.type "letsencrypt")) }}
 {{- if $autoHTTPS -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: autohttps
   labels:
-    {{- include "jupyterhub.labels" . | nindent 4 }}
+    app: binder
+    component: autohttps
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "jupyterhub.matchLabels" . | nindent 6 }}
+      app: binder
+      component: autohttps
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        {{- include "jupyterhub.matchLabels" . | nindent 8 }}
+        app: binder
+        component: autohttps
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
         hub.jupyter.org/network-access-proxy-http: "true"
       annotations:
         checksum/config-map: {{ include (print .Template.BasePath "/proxy/autohttps/configmap.yaml") . | sha256sum }}
@@ -23,10 +31,10 @@ spec:
       {{- if .Values.rbac.enabled }}
       serviceAccountName: autohttps
       {{- end }}
-      {{- if .Values.scheduling.podPriority.enabled }}
+      {{- if .Values.jupyterhub.scheduling.podPriority.enabled }}
       priorityClassName: {{ .Release.Name }}-default-priority
       {{- end }}
-      nodeSelector: {{ toJson .Values.proxy.nodeSelector }}
+      nodeSelector: {{ .Values.jupyterhub.proxy.nodeSelector | toJson }}
       {{- include "jupyterhub.coreAffinity" . | nindent 6 }}
       volumes:
         - name: certificates
@@ -36,11 +44,11 @@ spec:
             name: traefik-proxy-config
       initContainers:
       - name: load-acme
-        image: "{{ .Values.proxy.secretSync.image.name }}:{{ .Values.proxy.secretSync.image.tag }}"
-        {{- with .Values.proxy.secretSync.image.pullPolicy }}
+        image: "{{ .Values.jupyterhub.proxy.secretSync.image.name }}:{{ .Values.jupyterhub.proxy.secretSync.image.tag }}"
+        {{- with .Values.jupyterhub.proxy.secretSync.image.pullPolicy }}
         imagePullPolicy: {{ . }}
         {{- end }}
-        command: ["/usr/local/bin/secret-sync.py", "load", "proxy-public-tls-acme", "acme.json", "/etc/acme/acme.json"]
+        command: ["/usr/local/bin/secret-sync.py", "load", "binder-tls-acme", "acme.json", "/etc/acme/acme.json"]
         env:
         # We need this to get logs immediately
         - name: PYTHONUNBUFFERED
@@ -50,12 +58,12 @@ spec:
             mountPath: /etc/acme
       containers:
         - name: traefik
-          image: "{{ .Values.proxy.traefik.image.name }}:{{ .Values.proxy.traefik.image.tag }}"
-          {{- with .Values.proxy.traefik.image.pullPolicy }}
+          image: "{{ .Values.jupyterhub.proxy.traefik.image.name }}:{{ .Values.jupyterhub.proxy.traefik.image.tag }}"
+          {{- with .Values.jupyterhub.proxy.traefik.image.pullPolicy }}
           imagePullPolicy: {{ . }}
           {{- end }}
           resources:
-            {{- .Values.proxy.traefik.resources | toYaml | trimSuffix "\n" | nindent 12 }}
+            {{- .Values.jupyterhub.proxy.traefik.resources | toYaml | trimSuffix "\n" | nindent 12 }}
           ports:
             - name: http
               containerPort: 80
@@ -69,18 +77,19 @@ spec:
             - name: certificates
               mountPath: /etc/acme
         - name: secret-sync
-          image: "{{ .Values.proxy.secretSync.image.name }}:{{ .Values.proxy.secretSync.image.tag }}"
-          {{- with .Values.proxy.secretSync.image.pullPolicy }}
+          image: "{{ .Values.jupyterhub.proxy.secretSync.image.name }}:{{ .Values.jupyterhub.proxy.secretSync.image.tag }}"
+          {{- with .Values.jupyterhub.proxy.secretSync.image.pullPolicy }}
           imagePullPolicy: {{ . }}
           {{- end }}
           command:
             - /usr/local/bin/secret-sync.py
             - watch-save
-            - --label=app={{ include "jupyterhub.appLabel" . }}
+            - --label=app=binder
+            - --label=component=autohttps
             - --label=release={{ .Release.Name }}
             - --label=chart={{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
             - --label=heritage=secret-sync
-            - proxy-public-tls-acme
+            - binder-tls-acme
             - acme.json
             - /etc/acme/acme.json
           env:

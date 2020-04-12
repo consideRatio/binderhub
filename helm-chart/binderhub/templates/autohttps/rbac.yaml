@@ -1,12 +1,15 @@
-{{- $HTTPS := (and .Values.proxy.https.hosts .Values.proxy.https.enabled) }}
-{{- $autoHTTPS := (and $HTTPS (eq .Values.proxy.https.type "letsencrypt")) }}
+{{- $HTTPS := (and .Values.jupyterhub.proxy.https.hosts .Values.jupyterhub.proxy.https.enabled) }}
+{{- $autoHTTPS := (and $HTTPS (eq .Values.jupyterhub.proxy.https.type "letsencrypt")) }}
 {{- if (and $autoHTTPS .Values.rbac.enabled) -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: autohttps
   labels:
-    {{- include "jupyterhub.labels" . | nindent 4 }}
+    app: binder
+    component: autohttps
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
@@ -17,7 +20,10 @@ kind: RoleBinding
 metadata:
   name: autohttps
   labels:
-    {{- include "jupyterhub.labels" . | nindent 4 }}
+    app: binder
+    component: autohttps
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 subjects:
 - kind: ServiceAccount
   name: autohttps
@@ -32,5 +38,8 @@ kind: ServiceAccount
 metadata:
   name: autohttps
   labels:
-    {{- include "jupyterhub.labels" . | nindent 4 }}
+    app: binder
+    component: autohttps
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 {{- end }}
