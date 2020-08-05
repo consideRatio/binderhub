@@ -4,7 +4,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: traefik-proxy-config
+  name: binder-traefik-proxy-config
   labels:
     app: binder
     component: autohttps

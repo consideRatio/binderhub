@@ -137,7 +137,7 @@ config:
     per_repo_quota: {{ .Values.perRepoQuota }}
 {{- end }}
 
-{{- /* end removedConfig */ -}}
+{{- /* end removedConfig */}}
 {{- end }}
 
 

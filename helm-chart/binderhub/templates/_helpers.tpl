@@ -1,21 +1,21 @@
-{{/* vim: set filetype=mustache: */}}
-{{/*
+{{- /* vim: set filetype=mustache: */}}
+{{- /*
 Expand the name of the chart.
 */}}
 {{- define "name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
+{{ default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
 
-{{/*
+{{- /*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "fullname" -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
+{{ printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
 
-{{/*
+{{- /*
 Render docker config.json for the registry-publishing secret.
 */}}
 {{- define "registryDockerConfig" -}}
@@ -25,7 +25,7 @@ Render docker config.json for the registry-publishing secret.
 
 {{- /* default username if unspecified
   (_json_key for gcr.io, <token> otherwise)
-*/ -}}
+*/}}
 
 {{- if not .Values.registry.username }}
   {{- if eq $url "https://gcr.io" }}

@@ -76,9 +76,9 @@ spec:
           - mountPath: /var/run/docker.sock
             name: docker-socket
           {{- end }}
-          {{ if .Values.extraVolumeMounts }}
+          {{- if .Values.extraVolumeMounts }}
           {{- .Values.extraVolumeMounts | toYaml | nindent 10 }}
-          {{ end }}
+          {{- end }}
         resources:
           {{- .Values.resources | toYaml | nindent 10 }}
         imagePullPolicy: IfNotPresent
@@ -98,9 +98,9 @@ spec:
         - name: JUPYTERHUB_BASE_URL
           value: {{ .Values.jupyterhub.hub.baseUrl | quote }}
         - name: JUPYTERHUB_CLIENT_ID
-          value: {{ .Values.jupyterhub.hub.services.binder.oauth_client_id | quote}}
+          value: {{ .Values.jupyterhub.hub.services.binder.oauth_client_id | quote }}
         - name: JUPYTERHUB_OAUTH_CALLBACK_URL
-          value: {{ .Values.jupyterhub.hub.services.binder.oauth_redirect_uri | quote}}
+          value: {{ .Values.jupyterhub.hub.services.binder.oauth_redirect_uri | quote }}
         {{- if .Values.jupyterhub.hub.allowNamedServers }}
         - name: JUPYTERHUB_ALLOW_NAMED_SERVERS
           value: "true"

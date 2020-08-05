@@ -4,7 +4,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: autohttps
+  name: binder-autohttps
   labels:
     app: binder
     component: autohttps
