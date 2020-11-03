@@ -120,11 +120,11 @@ spec:
         {{- end }}
         ports:
           - containerPort: 8585
-            name: binder
+            name: http
         livenessProbe:
           httpGet:
             path: {{ .Values.config.BinderHub.base_url | default "/" }}versions
-            port: binder
+            port: http
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 10

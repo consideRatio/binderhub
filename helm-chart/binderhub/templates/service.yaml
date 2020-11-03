@@ -16,9 +16,9 @@ spec:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   ports:
-    - protocol: TCP
+    - name: http
       port: 80
-      targetPort: 8585
+      targetPort: http
       {{- with .Values.service.nodePort }}
       nodePort: {{ . }}
       {{- end }}
