@@ -60,8 +60,6 @@ jupyterhub:
   custom:
     cors: *cors
     binderauth_enabled: false
-  rbac:
-    enabled: true
   hub:
     extraConfig:
       00-binder: |
