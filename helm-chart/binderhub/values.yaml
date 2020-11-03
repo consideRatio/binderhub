@@ -1,3 +1,53 @@
+# This switch will make certain Helm template values be merged into the passed
+# values, effectively overriding certain configuration. The actual merging is
+# done on a Helm template file basis by invoking the _helpers.tpl defined
+# function "binderhub.conditionalUpdatesToValues".
+autohttpsFromJupyterhub:
+  enabled: true
+  mergeValues:
+    service:
+      type: ClusterIP
+    jupyterhub:
+      proxy:
+        traefik:
+          extraDynamicConfig:
+            http:
+              # Services represents the destinations we route traffic to.
+              #
+              # ref: https://docs.traefik.io/routing/services/
+              services:
+                # Represents the binderhub web server.
+                binderhub:
+                  loadBalancer:
+                    servers:
+                      - url: 'http://binder:8585/'
+            # Routers routes web requests to a service and optionally tweaks them with
+            # middleware.
+            #
+            # ref: https://docs.traefik.io/routing/routers/
+            routers:
+              # Route secure https traffic to the binderhub web server.
+              binderhub:
+                entrypoints:
+                  - "https"
+                middlewares:
+                  - "hsts"
+                  - "scheme"
+                rule: Host(`example.com`)
+                service: binderhub
+                # Use Z2JHs predefined TLS options and certificate resolver,
+                # enabling this route to act as a TLS termination proxy with
+                # high security standards.
+                tls:
+                  certResolver: default
+                  domains:
+                    {{- range $host := .Values.jupyterhub.proxy.https.hosts }}
+                    - main: {{ $host }}
+                    {{- end }}
+                  options: default
+
+
+
 pdb:
   enabled: true
   minAvailable: 1

@@ -1,4 +1,12 @@
 {{/* vim: set filetype=mustache: */}}
+
+{{- define "binderhub.conditionalUpdatesToValues" -}}
+{{- if .Values.autohttpsFromJupyterhub.enabled }}
+{{- $_ := merge .Values .Values.autohttpsFromJupyterhub.mergeValues }}
+{{- end }}
+{{- end -}}
+
+
 {{/*
 Expand the name of the chart.
 */}}
