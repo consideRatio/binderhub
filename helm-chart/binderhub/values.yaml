@@ -181,7 +181,7 @@ ingress:
   enabled: false
   https:
     enabled: false
-    type: kube-lego
+    type: letsencrypt
   hosts:
     - chart-example.local
   annotations: {}

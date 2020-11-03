@@ -137,11 +137,20 @@ config:
     per_repo_quota: {{ .Values.perRepoQuota }}
 {{- end }}
 
+{{- if eq .Values.ingress.https.type "kube-lego" }}
+
+ingress.https.type=kube-lego configuration is removed as kube-lego isn't around
+any more. ingress.https.type=letsencrypt is now the default configuration option
+which will rely on the JupyterHub Helm chart's automatic TLS cert acquisition
+system running in the autohttps pod.
+
+{{- end }}
+
 {{- /* end removedConfig */ -}}
 {{- end }}
 
 
-{{- if (or .Values.hub .Values.build .Values.github .Values.gitlab .Values.perRepoQuota  .Values.registry.host .Values.registry.authHost .Values.registry.tokenUrl .Values.registry.prefix (ne (typeOf .Values.registry.enabled) "<nil>")) }}
+{{- if (or .Values.hub .Values.build .Values.github .Values.gitlab .Values.perRepoQuota  .Values.registry.host .Values.registry.authHost .Values.registry.tokenUrl .Values.registry.prefix (ne (typeOf .Values.registry.enabled) "<nil>") (eq .Values.ingress.https.type "kube-lego")) }}
 {{- fail (include "removedConfig" .) }}
 {{- end }}
 
