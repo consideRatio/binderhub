@@ -57,7 +57,7 @@ RUN pip install --no-cache-dir \
 ARG PIP_TOOLS=
 RUN test -z "$PIP_TOOLS" || pip install --no-cache pip-tools==$PIP_TOOLS
 
-ENTRYPOINT ["python3", "-m", "binderhub"]
+ENTRYPOINT ["python", "-m", "binderhub"]
 CMD ["--config", "/etc/binderhub/config/binderhub_config.py"]
 ENV PYTHONUNBUFFERED=1
 EXPOSE 8585
