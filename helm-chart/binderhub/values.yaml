@@ -67,7 +67,7 @@ jupyterhub:
 
         # image & token are set via spawn options
         from kubespawner import KubeSpawner
-        from traitlet import Bool, Unicode
+        from traitlets import Bool, Unicode
 
         class BinderSpawner(KubeSpawner):
             auth_enabled = Bool(

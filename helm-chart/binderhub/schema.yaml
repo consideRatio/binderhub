@@ -538,6 +538,6 @@ properties:
   # Deprecated
   cors:
     type: object
-    additionalProperties: false
+    additionalProperties: true
     description: |
       DEPRECATED.
